@@ -700,6 +700,30 @@ char* rw_Region2Str(LoRaMacRegion_t region)
   }  
 }
 
+void printOtaa() {
+	printf("OTAA: \r\n");
+	printf("Dev_EUI: ");
+	dump_hex2str(g_lorawan_parameter.dev_eui, 8);
+	printf("AppEui: ");
+	dump_hex2str(g_lorawan_parameter.app_eui, 8);
+	printf("AppKey: ");
+	dump_hex2str(g_lorawan_parameter.app_key, 16);
+}
+
+void printAbp() {
+	printf("ABP: \r\n");
+	printf("Dev_EUI: ");
+	dump_hex2str(g_lorawan_parameter.dev_eui , 8);
+	//printf("DevAddr: %08X\r\n", DevAddr);
+	printf("DevAddr: ");
+	printf("%02X%02X%02X%02X\r\n",g_lorawan_parameter.dev_addr[3],g_lorawan_parameter.dev_addr[2],g_lorawan_parameter.dev_addr[1],g_lorawan_parameter.dev_addr[0]);
+	//dump_hex2str(g_lorawan_parameter.dev_addr , 4);
+	printf("NwkSKey: ");
+	dump_hex2str(g_lorawan_parameter.nwks_key , 16);
+	printf("AppSKey: ");
+	dump_hex2str(g_lorawan_parameter.apps_key , 16);
+}
+
 LoRaMacRegion_t rw_Str2Region(char* region)
 {
   if ( 0==strcmp(region, "AS923")) {
@@ -811,13 +835,7 @@ int LoRaWAN_LOOP(void)
 				// Initialize LoRaMac device unique ID
 				//BoardGetUniqueId( DevEui );
 
-				printf("OTAA: \r\n");
-				printf("Dev_EUI: ");
-				dump_hex2str(g_lorawan_parameter.dev_eui, 8);
-				printf("AppEui: ");
-				dump_hex2str(g_lorawan_parameter.app_eui, 8);
-				printf("AppKey: ");
-				dump_hex2str(g_lorawan_parameter.app_key, 16);
+				printOtaa();
 
 				mlmeReq.Type = MLME_JOIN;
 
@@ -846,17 +864,7 @@ int LoRaWAN_LOOP(void)
 //					DevAddr = randr( 0, 0x01FFFFFF );
 //				}
 				
-				printf("ABP: \r\n");
-				printf("Dev_EUI: ");
-				dump_hex2str(g_lorawan_parameter.dev_eui , 8);
-				//printf("DevAddr: %08X\r\n", DevAddr);
-				printf("DevAddr: ");
-				printf("%02X%02X%02X%02X\r\n",g_lorawan_parameter.dev_addr[3],g_lorawan_parameter.dev_addr[2],g_lorawan_parameter.dev_addr[1],g_lorawan_parameter.dev_addr[0]);
-				//dump_hex2str(g_lorawan_parameter.dev_addr , 4);
-				printf("NwkSKey: ");
-				dump_hex2str(g_lorawan_parameter.nwks_key , 16);
-				printf("AppSKey: ");
-				dump_hex2str(g_lorawan_parameter.apps_key , 16);
+				printAbp();
 
 				mibReq.Type = MIB_NET_ID;
 				mibReq.Param.NetID = LORAWAN_NETWORK_ID;
@@ -1088,6 +1096,10 @@ int chack_data(char* str)
 			return 1;
 		}
 		return 0;
+	} else if (0 == strcmp(argv[0],"at+print")) {
+		printAbp();
+		printOtaa();
+		return 0;
 	}
 	return 1;
 }
@@ -1151,8 +1163,3 @@ int main (void)
         }
 	}
 }
-
-
-
-
-
